@@ -63,7 +63,7 @@ public class FoodManagementActivity extends AppCompatActivity {
     }
 
     private void fetchFoodAll() {
-        String sql = "SELECT food.Food_ID, food.Food_Name, food.Food_NameUS, food.Food_Image, food.Food_Price, foodtype.Food_Type_Name " +
+        String sql = "SELECT food.Food_ID, food.Food_Name, food.Food_NameUS, food.Food_Image, food.Food_Price, food.Food_Type_ID, foodtype.Food_Type_Name " +
                 "FROM `food` INNER JOIN foodtype ON food.Food_Type_ID = foodtype.Food_Type_ID ORDER BY food.Created DESC";
         Dru.connection(ConnectDB.getConnection())
                 .execute(sql)
@@ -79,7 +79,8 @@ public class FoodManagementActivity extends AppCompatActivity {
                                         resultSet.getString(3),
                                         resultSet.getString(4),
                                         resultSet.getInt(5),
-                                        resultSet.getString(6)
+                                        resultSet.getInt(6),
+                                        resultSet.getString(7)
                                 );
                                 items.add(food);
                             }
@@ -126,6 +127,20 @@ public class FoodManagementActivity extends AppCompatActivity {
             holder.tvFoodPrice.setText("" + food.getFood_Price());
             holder.tvFoodType.setText(food.getFood_Type_Name());
             Dru.loadImage(holder.ivFoodImage, food.getFood_Image());
+
+            holder.btFoodUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getBaseContext(), UpdateFoodActivity.class);
+                    intent.putExtra("foodId", food.getFood_ID());
+                    intent.putExtra("foodName", food.getFood_Name());
+                    intent.putExtra("foodNameUs", food.getFood_NameUS());
+                    intent.putExtra("foodImage", food.getFood_Image());
+                    intent.putExtra("foodPrice", food.getFood_Price());
+                    intent.putExtra("foodTypeId", food.getFood_Type_ID());
+                    startActivity(intent);
+                }
+            });
 
             holder.btFoodDelete.setOnClickListener(new View.OnClickListener() {
                 @Override

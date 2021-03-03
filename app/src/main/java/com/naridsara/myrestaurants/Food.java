@@ -2,22 +2,24 @@ package com.naridsara.myrestaurants;
 
 public class Food {
 
-   private int Food_ID;
-   private String Food_Name;
-   private String Food_NameUS;
-   private String Food_Image;
-   private int Food_Price;
-   private String Food_Type_Name;
+    private int Food_ID;
+    private String Food_Name;
+    private String Food_NameUS;
+    private String Food_Image;
+    private int Food_Price;
+    private int Food_Type_ID;
+    private String Food_Type_Name;
 
     public Food() {
     }
 
-    public Food(int food_ID, String food_Name, String food_NameUS, String food_Image, int food_Price, String food_Type_Name) {
+    public Food(int food_ID, String food_Name, String food_NameUS, String food_Image, int food_Price, int food_Type_ID, String food_Type_Name) {
         Food_ID = food_ID;
         Food_Name = food_Name;
         Food_NameUS = food_NameUS;
         Food_Image = food_Image;
         Food_Price = food_Price;
+        Food_Type_ID = food_Type_ID;
         Food_Type_Name = food_Type_Name;
     }
 
@@ -59,6 +61,14 @@ public class Food {
 
     public void setFood_Price(int food_Price) {
         Food_Price = food_Price;
+    }
+
+    public int getFood_Type_ID() {
+        return Food_Type_ID;
+    }
+
+    public void setFood_Type_ID(int food_Type_ID) {
+        Food_Type_ID = food_Type_ID;
     }
 
     public String getFood_Type_Name() {
