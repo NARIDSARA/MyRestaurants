@@ -3,6 +3,10 @@
 
     <item
         android:id="@+id/management"
-        android:title="management" />
+        android:title="Management" />
+
+    <item
+        android:id="@+id/history"
+        android:title="History" />
 
 </menu>
