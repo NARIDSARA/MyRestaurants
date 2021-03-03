@@ -1,5 +1,6 @@
 package com.naridsara.myrestaurants;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,10 +8,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adedom.library.Dru;
 import com.adedom.library.ExecuteQuery;
+import com.adedom.library.ExecuteUpdate;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -121,6 +126,45 @@ public class FoodManagementActivity extends AppCompatActivity {
             holder.tvFoodPrice.setText("" + food.getFood_Price());
             holder.tvFoodType.setText(food.getFood_Type_Name());
             Dru.loadImage(holder.ivFoodImage, food.getFood_Image());
+
+            holder.btFoodDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogRemoveFood(food.getFood_ID());
+                }
+            });
+        }
+
+        private void dialogRemoveFood(int foodId) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(FoodManagementActivity.this);
+            dialog.setTitle("Remove food");
+            dialog.setMessage("Are you sure?");
+            dialog.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            dialog.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    removeFood(foodId);
+                }
+            });
+            dialog.show();
+        }
+
+        private void removeFood(int foodId) {
+            String sql = "DELETE FROM `food` WHERE `food`.`Food_ID` = " + foodId;
+            Dru.connection(ConnectDB.getConnection())
+                    .execute(sql)
+                    .commit(new ExecuteUpdate() {
+                        @Override
+                        public void onComplete() {
+                            fetchFoodAll();
+                            Toast.makeText(FoodManagementActivity.this, "Remove food success", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
 
         @Override
@@ -142,6 +186,8 @@ public class FoodManagementActivity extends AppCompatActivity {
         private final TextView tvFoodNameUS;
         private final TextView tvFoodPrice;
         private final TextView tvFoodType;
+        private final Button btFoodUpdate;
+        private final Button btFoodDelete;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -150,6 +196,8 @@ public class FoodManagementActivity extends AppCompatActivity {
             tvFoodNameUS = (TextView) itemView.findViewById(R.id.tvFoodNameUS);
             tvFoodPrice = (TextView) itemView.findViewById(R.id.tvFoodPrice);
             tvFoodType = (TextView) itemView.findViewById(R.id.tvFoodType);
+            btFoodUpdate = (Button) itemView.findViewById(R.id.btFoodUpdate);
+            btFoodDelete = (Button) itemView.findViewById(R.id.btFoodDelete);
         }
     }
 
