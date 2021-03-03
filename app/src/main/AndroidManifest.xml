@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyRestaurants">
+        <activity android:name=".AddFoodTypeActivity" />
         <activity android:name=".AddFoodActivity" />
         <activity android:name=".HistoryInfoActivity" />
         <activity android:name=".HistoryActivity" />
