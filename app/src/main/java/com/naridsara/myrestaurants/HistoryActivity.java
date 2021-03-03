@@ -101,7 +101,7 @@ public class HistoryActivity extends AppCompatActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getBaseContext(), OrderInfoActivity.class);
+                    Intent intent = new Intent(getBaseContext(), HistoryInfoActivity.class);
                     intent.putExtra("orderId", order.getOrderId());
                     startActivity(intent);
                 }
