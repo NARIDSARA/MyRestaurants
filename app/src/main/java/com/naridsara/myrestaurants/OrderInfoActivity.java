@@ -1,13 +1,17 @@
 package com.naridsara.myrestaurants;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,8 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adedom.library.Dru;
 import com.adedom.library.ExecuteQuery;
+import com.adedom.library.ExecuteUpdate;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class OrderInfoActivity extends AppCompatActivity {
@@ -28,6 +34,8 @@ public class OrderInfoActivity extends AppCompatActivity {
     private TextView tvFoodPriceTotal;
     private TextView tvCartCountSum;
     private Toolbar mToolbar;
+    private Button mBtCompleted;
+    private Button mBtCheckBill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +55,18 @@ public class OrderInfoActivity extends AppCompatActivity {
         tvFoodPriceTotal = (TextView) findViewById(R.id.tvFoodPriceTotal);
         tvCartCountSum = (TextView) findViewById(R.id.tvCartCountSum);
 
+        mBtCompleted = (Button) findViewById(R.id.btCompleted);
+        mBtCheckBill = (Button) findViewById(R.id.btCheckBill);
+
+        mBtCompleted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogOrderCompleted();
+            }
+        });
+
         fetchOrderInfo();
+        fetchStatusCompleted();
     }
 
     private void fetchOrderInfo() {
@@ -78,6 +97,57 @@ public class OrderInfoActivity extends AppCompatActivity {
                             calSumOrder();
                         } catch (Exception e) {
                         }
+                    }
+                });
+    }
+
+    private void fetchStatusCompleted() {
+        String sql = "SELECT Status FROM `order` WHERE Order_ID = '" + orderId + "'";
+        Dru.connection(ConnectDB.getConnection())
+                .execute(sql)
+                .commit(new ExecuteQuery() {
+                    @Override
+                    public void onComplete(ResultSet resultSet) {
+                        try {
+                            if (resultSet.next()) {
+                                int status = resultSet.getInt(1);
+                                mBtCompleted.setEnabled(status == 0);
+                            }
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    private void dialogOrderCompleted() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Completed");
+        dialog.setMessage("Are you sure?");
+        dialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                orderCompleted();
+            }
+        });
+        dialog.show();
+    }
+
+    private void orderCompleted() {
+        String sql = "UPDATE `order` SET `Status`='1' WHERE Order_ID = '" + orderId + "'";
+        Dru.connection(ConnectDB.getConnection())
+                .execute(sql)
+                .commit(new ExecuteUpdate() {
+                    @Override
+                    public void onComplete() {
+                        fetchStatusCompleted();
+                        Toast.makeText(OrderInfoActivity.this, "Order completed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
