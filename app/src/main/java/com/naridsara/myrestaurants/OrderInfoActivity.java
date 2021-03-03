@@ -65,6 +65,13 @@ public class OrderInfoActivity extends AppCompatActivity {
             }
         });
 
+        mBtCheckBill.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogOrderCheckBill();
+            }
+        });
+
         fetchOrderInfo();
         fetchStatusCompleted();
     }
@@ -112,6 +119,7 @@ public class OrderInfoActivity extends AppCompatActivity {
                             if (resultSet.next()) {
                                 int status = resultSet.getInt(1);
                                 mBtCompleted.setEnabled(status == 0);
+                                mBtCheckBill.setEnabled(status == 1);
                             }
                         } catch (SQLException throwables) {
                             throwables.printStackTrace();
@@ -148,6 +156,38 @@ public class OrderInfoActivity extends AppCompatActivity {
                     public void onComplete() {
                         fetchStatusCompleted();
                         Toast.makeText(OrderInfoActivity.this, "Order completed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void dialogOrderCheckBill() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Check bill");
+        dialog.setMessage("Are you sure?");
+        dialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                orderCheckBill();
+            }
+        });
+        dialog.show();
+    }
+
+    private void orderCheckBill() {
+        String sql = "UPDATE `order` SET `Status`='2' WHERE Order_ID = '" + orderId + "'";
+        Dru.connection(ConnectDB.getConnection())
+                .execute(sql)
+                .commit(new ExecuteUpdate() {
+                    @Override
+                    public void onComplete() {
+                        fetchStatusCompleted();
+                        Toast.makeText(OrderInfoActivity.this, "Order check bill", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
